@@ -20,7 +20,7 @@ This is a book catalogue project built using Spring Boot. It allows users to man
 
 To get started with the Book Catalogue project using Gradle, follow these steps:
 
-1. Clone the repository: `git clone https://github.com/your-username/book-catalogue.git`
+1. Clone the repository: `git clone https://github.com/irfnhanif/book-catalogue.git`
 2. Navigate to the project directory: `cd book-catalogue`
 3. Build the project: `gradle clean build`
 4. Run the application: `gradle bootRun`
