@@ -5,9 +5,9 @@ This is a book catalogue project built using Spring Boot. It allows users to man
 ## Features
 
 - Add new books to the catalogue
-- Edit book details such as title, author, and genre
+- Edit book details such as title, author, isbn, genre, and total page
+- Change cover image 
 - Delete books from the catalogue
-- Search for books by title, author, or genre
 - View a list of all books in the catalogue
 
 ## Technologies Used
