@@ -38,7 +38,7 @@ public class Book {
 
     private Book() {}
 
-    public Book(String title, String author, String ISBN, Integer totalPage, byte[] coverImage) {
+    public Book(String title, String author, String genre, String ISBN, Integer totalPage, byte[] coverImage) {
         this.title = title;
         this.author = author;
         this.ISBN = ISBN;
