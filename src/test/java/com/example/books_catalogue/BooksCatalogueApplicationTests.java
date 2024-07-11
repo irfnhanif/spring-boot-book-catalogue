@@ -54,5 +54,4 @@ class BooksCatalogueApplicationTests {
 		assertThat(coverImageURL).isEqualTo("http://what.ve");
 	}
 
-	// alala
 }
