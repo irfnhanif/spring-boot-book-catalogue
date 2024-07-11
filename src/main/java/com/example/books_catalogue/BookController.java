@@ -39,7 +39,7 @@ public class BookController {
     
     @PostMapping()
     public ResponseEntity<Void> addNewBook(@RequestBody Book newBookRequest, UriComponentsBuilder uriComponentsBuilder) {
-        Book bookToSave = new Book(newBookRequest.getTitle(), newBookRequest.getAuthor(), newBookRequest.getGenre(), newBookRequest.getISBN(), newBookRequest.getTotalPage(), newBookRequest.getCoverImage());
+        Book bookToSave = new Book(newBookRequest.getTitle(), newBookRequest.getAuthor(), newBookRequest.getGenre(), newBookRequest.getISBN(), newBookRequest.getTotalPage(), newBookRequest.getCoverImageURL());
         Book savedBook = bookRepository.save(bookToSave);
         URI locationOfNewBook = uriComponentsBuilder
                                 .path("/books/{id}")
