@@ -26,7 +26,7 @@ public class Book {
     private String genre;
     private String ISBN;
     private Integer totalPage;
-    private byte[] coverImage;
+    private String coverImageURL;
 
     @Column(name = "created_date", updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
@@ -38,12 +38,12 @@ public class Book {
 
     private Book() {}
 
-    public Book(String title, String author, String genre, String ISBN, Integer totalPage, byte[] coverImage) {
+    public Book(String title, String author, String genre, String ISBN, Integer totalPage, String coverImageURL) {
         this.title = title;
         this.author = author;
         this.ISBN = ISBN;
         this.totalPage = totalPage;
-        this.coverImage = coverImage;
+        this.coverImageURL = coverImageURL;
     }
 
     @PrePersist
@@ -80,8 +80,8 @@ public class Book {
         return totalPage;
     }
 
-    public byte[] getCoverImage() {
-        return coverImage;
+    public String getCoverImageURL() {
+        return coverImageURL;
     }
 
     public Date getCreatedDate() {
@@ -112,7 +112,7 @@ public class Book {
         this.totalPage = totalPage;
     }
 
-    public void setCoverImage(byte[] coverImage) {
-        this.coverImage = coverImage;
+    public void setCoverImage(String coverImageURL) {
+        this.coverImageURL = coverImageURL;
     }
 }
