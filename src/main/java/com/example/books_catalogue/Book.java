@@ -41,6 +41,7 @@ public class Book {
     public Book(String title, String author, String genre, String ISBN, Integer totalPage, String coverImageURL) {
         this.title = title;
         this.author = author;
+        this.genre = genre;
         this.ISBN = ISBN;
         this.totalPage = totalPage;
         this.coverImageURL = coverImageURL;
@@ -49,6 +50,7 @@ public class Book {
     @PrePersist
     protected void onCreate() {
         createdDate = new Date();
+        updatedDate = new Date();
     }
 
     @PreUpdate
