@@ -7,9 +7,6 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.jayway.jsonpath.DocumentContext;
-import com.jayway.jsonpath.JsonPath;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.net.URI;
@@ -17,13 +14,8 @@ import java.net.URI;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class BooksCatalogueApplicationTests {
 
-
 	@Autowired
 	TestRestTemplate testRestTemplate;
-
-	@Test
-	void contextLoads() {
-	}
 
 	@Test
 	void shouldAddANewBook() {
@@ -34,24 +26,24 @@ class BooksCatalogueApplicationTests {
 		assertThat(addResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
 		URI locationOfNewBook = addResponse.getHeaders().getLocation();
-		ResponseEntity<String> getResponse = testRestTemplate.getForEntity(locationOfNewBook, String.class);
+		ResponseEntity<Book> getResponse = testRestTemplate.getForEntity(locationOfNewBook, Book.class);
 
 		assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-		DocumentContext documentContext = JsonPath.parse(getResponse.getBody());
-		String title = documentContext.read("$.title");
-		String author = documentContext.read("$.author");
-		String genre = documentContext.read("$.genre");
-		String ISBN = documentContext.read("$.ISBN");
-		int pageCount = documentContext.read("$.pageCount");
-		String coverImageURL = documentContext.read("$.coverImageURL");
-
-		assertThat(title).isEqualTo("The Psychology of Money: Timeless Lessons on Wealth, Greed, and Happiness");
-		assertThat(author).isEqualTo("Morgan Housel");
-		assertThat(genre).isEqualTo("Non-Fiction");
-		assertThat(ISBN).isEqualTo("978-0857197689");
-		assertThat(pageCount).isEqualTo(266);
-		assertThat(coverImageURL).isEqualTo("http://what.ve");
+		Book retrievedBook = getResponse.getBody();
+		assertThat(retrievedBook).isNotNull();
+		assertThat(retrievedBook.getTitle()).isEqualTo("The Psychology of Money: Timeless Lessons on Wealth, Greed, and Happiness");
+		assertThat(retrievedBook.getAuthor()).isEqualTo("Morgan Housel");
+		assertThat(retrievedBook.getGenre()).isEqualTo("Non-Fiction");
+		assertThat(retrievedBook.getISBN()).isEqualTo("978-0857197689");
+		assertThat(retrievedBook.getTotalPage()).isEqualTo(266);
+		assertThat(retrievedBook.getCoverImageURL()).isEqualTo("http://what.ve");
 	}
 
+	@Test
+	void shouldNotReturnABook() {
+		ResponseEntity<String> getResponse = testRestTemplate.getForEntity("/books/99999", String.class);
+
+		assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+	}
 }
