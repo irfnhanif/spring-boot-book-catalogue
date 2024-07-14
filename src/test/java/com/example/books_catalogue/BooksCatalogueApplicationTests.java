@@ -1,5 +1,6 @@
 package com.example.books_catalogue;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,16 +31,21 @@ class BooksCatalogueApplicationTests {
 
 	@Autowired
 	BookRepository bookRepository;
-
-	@BeforeAll
+	
+	@BeforeEach
 	void addTestBookData() {
-		Book book1 = new Book("Book 1", "Author 1", "Genre 1", "ISBN 1", 100, "http://book1.com");
-		Book book2 = new Book("Book 2", "Author 2", "Genre 2", "ISBN 2", 200, "http://book2.com");
-		Book book3 = new Book("Book 3", "Author 3", "Genre 3", "ISBN 3", 300, "http://book3.com");
+		Book book1 = new Book("Book 1", "Author 1", "Genre 1", "329", 100, "http://book1.com");
+		Book book2 = new Book("Book 2", "Author 2", "Genre 2", "348-40", 200, "http://book2.com");
+		Book book3 = new Book("Book 3", "Author 3", "Genre 3", "34843", 300, "http://book3.com");
 
 		bookRepository.save(book1);
 		bookRepository.save(book2);
 		bookRepository.save(book3);
+	}
+
+	@AfterEach
+	void clearTestBookData() {
+		bookRepository.deleteAll();
 	}
 
 	@Test
@@ -67,7 +73,18 @@ class BooksCatalogueApplicationTests {
 
 	@Test
 	void shouldReturnABook() {
+		ResponseEntity<Book> getResponse = testRestTemplate.getForEntity("/books/329", Book.class);
 
+		assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+		Book book = getResponse.getBody();
+		assertThat(book).isNotNull();
+		assertThat(book.getTitle()).isEqualTo("Book 1");
+		assertThat(book.getAuthor()).isEqualTo("Author 1");
+		assertThat(book.getGenre()).isEqualTo("Genre 1");
+		assertThat(book.getISBN()).isEqualTo("329");
+		assertThat(book.getTotalPage()).isEqualTo(100);
+		assertThat(book.getCoverImageURL()).isEqualTo("http://book1.com");
 	}
 
 	@Test
