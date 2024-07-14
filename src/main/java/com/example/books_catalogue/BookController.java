@@ -33,16 +33,16 @@ public class BookController {
         Page<Book> page = bookRepository.findAll(PageRequest.of(
             pageable.getPageNumber(),
             pageable.getPageSize(),
-            pageable.getSortOr(Sort.by(Sort.Direction.ASC, "id"))
+            pageable.getSortOr(Sort.by(Sort.Direction.ASC, "ISBN"))
         ));
 
         return ResponseEntity.ok(page.getContent());
     }
 
-    @GetMapping("/{bookId}")
-    public ResponseEntity<Optional<Book>> findOneBookById(@PathVariable Integer bookId) {
-        Optional<Book> book = bookRepository.findById(bookId);
-        if (book.isEmpty()) {
+    @GetMapping("/{bookISBN}")
+    public ResponseEntity<Book> findOneBookById(@PathVariable String bookISBN) {
+        Book book = bookRepository.findByISBN(bookISBN);
+        if (book == null) {
             return ResponseEntity.notFound().build();
         }
 
@@ -54,8 +54,8 @@ public class BookController {
         Book bookToSave = new Book(newBookRequest.getTitle(), newBookRequest.getAuthor(), newBookRequest.getGenre(), newBookRequest.getISBN(), newBookRequest.getTotalPage(), newBookRequest.getCoverImageURL());
         Book savedBook = bookRepository.save(bookToSave);
         URI locationOfNewBook = uriComponentsBuilder
-                                .path("/books/{id}")
-                                .buildAndExpand(savedBook.getId())
+                                .path("/books/{ISBN}")
+                                .buildAndExpand(savedBook.getISBN())
                                 .toUri();
 
         return ResponseEntity.created(locationOfNewBook).build();
