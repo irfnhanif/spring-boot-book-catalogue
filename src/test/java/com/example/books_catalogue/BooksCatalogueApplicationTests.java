@@ -1,7 +1,6 @@
 package com.example.books_catalogue;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +12,11 @@ import org.springframework.http.ResponseEntity;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+
+import com.jayway.jsonpath.DocumentContext;
+import com.jayway.jsonpath.JsonPath;
+
+import net.minidev.json.JSONArray;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -72,6 +76,45 @@ class BooksCatalogueApplicationTests {
 	}
 
 	@Test
+	void shouldReturnPageOfBooksWithDefaultValuesOfQueryParam() {
+		ResponseEntity<String> response = testRestTemplate.getForEntity("/books", String.class);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+		DocumentContext documentContext = JsonPath.parse(response.getBody());
+		JSONArray page = documentContext.read("$[*]");
+		assertThat(page.size()).isEqualTo(3);
+
+		JSONArray titles = documentContext.read("$..title");
+		assertThat(titles).containsExactly("Book 1", "Book 2", "Book 3"); 
+	}
+
+	@Test
+	void shouldReturnPageOfBooksBasedOnQueryParam() {
+		ResponseEntity<String> response = testRestTemplate.getForEntity("/books?page=0&size=1", String.class);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+		DocumentContext documentContext = JsonPath.parse(response.getBody());
+		JSONArray page = documentContext.read("$[*]");
+		assertThat(page.size()).isEqualTo(1);
+
+		String title = documentContext.read("$[0].title");
+		assertThat(title).isEqualTo("Book 1");
+	}
+
+	@Test
+	void shouldReturnDescSortedPageOfBookBasedOnQueryParam() {
+		ResponseEntity<String> response = testRestTemplate.getForEntity("/books?page=0&size=2&sort=totalPage,desc", String.class);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+		DocumentContext documentContext = JsonPath.parse(response.getBody());
+		JSONArray page = documentContext.read("$[*]");
+		assertThat(page.size()).isEqualTo(2);
+
+		JSONArray totalPages = documentContext.read("$..totalPage");
+		assertThat(totalPages).containsExactly(300, 200);
+	}
+
+	@Test
 	void shouldReturnABook() {
 		ResponseEntity<Book> getResponse = testRestTemplate.getForEntity("/books/329", Book.class);
 
@@ -89,7 +132,7 @@ class BooksCatalogueApplicationTests {
 
 	@Test
 	void shouldNotReturnABook() {
-		ResponseEntity<String> getResponse = testRestTemplate.getForEntity("/books/99999", String.class);
+		ResponseEntity<String> getResponse = testRestTemplate.getForEntity("/books/not-isbn", String.class);
 
 		assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}
