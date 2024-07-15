@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "spring-boot-book-catalogue",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}
