@@ -19,7 +19,6 @@ import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 
 import net.minidev.json.JSONArray;
-import net.minidev.json.JSONObject;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -180,5 +179,12 @@ class BooksCatalogueApplicationTests {
 		ResponseEntity<Void> deleteResponse = testRestTemplate.exchange("/books/329", HttpMethod.DELETE, null, Void.class);
 
 		assertThat(deleteResponse.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+	}
+
+	@Test
+	void shouldNotDeleteNonExistingBook() {
+		ResponseEntity<Void> deleteResponse = testRestTemplate.exchange("/books/not-isbn", HttpMethod.DELETE, null,Void.class);
+
+		assertThat(deleteResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}
 }
