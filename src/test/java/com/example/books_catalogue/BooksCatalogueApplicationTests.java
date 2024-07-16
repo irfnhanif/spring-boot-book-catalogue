@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -17,6 +19,7 @@ import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 
 import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -135,5 +138,30 @@ class BooksCatalogueApplicationTests {
 		ResponseEntity<String> getResponse = testRestTemplate.getForEntity("/books/not-isbn", String.class);
 
 		assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+	}
+
+	@Test
+	void shouldUpdateExistingBook() {
+		ResponseEntity<Book> firstGetResponse = testRestTemplate.getForEntity("/books/329", Book.class);
+		assertThat(firstGetResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+		Book bookToUpdate = firstGetResponse.getBody();
+		assertThat(bookToUpdate).isNotNull();
+		String updatedTitle = "Book 329";
+		bookToUpdate.setTitle(updatedTitle);
+		HttpEntity<Book> updatedBook = new HttpEntity<>(bookToUpdate);
+
+		ResponseEntity<String> putResponse = testRestTemplate.exchange("/books/329", HttpMethod.PUT, updatedBook, String.class);
+		assertThat(putResponse.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+
+		ResponseEntity<String> secondGetResponse = testRestTemplate.getForEntity("/books/329", String.class);
+		assertThat(secondGetResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+		DocumentContext documentContext = JsonPath.parse(secondGetResponse.getBody());
+		String ISBN =  documentContext.read("$.isbn");
+		String title = documentContext.read("$.title");
+
+		assertThat(ISBN).isEqualTo("329");
+		assertThat(title).isEqualTo("Book 329");
 	}
 }
