@@ -69,8 +69,7 @@ public class BookController {
     
     @PutMapping("/{bookISBN}")
     public ResponseEntity<Void> updateExistingBook(@PathVariable String bookISBN, @RequestBody Book bookRequest) {
-        Book book = bookRepository.findByISBN(bookISBN);
-        if (book == null) {
+        if (!bookRepository.existsByISBN(bookISBN)) {
             return ResponseEntity.notFound().build();
         }
         bookRepository.save(bookRequest);
@@ -81,7 +80,7 @@ public class BookController {
     @DeleteMapping("/{bookISBN}")
     @Transactional
     public ResponseEntity<Void> deleteExistingBook(@PathVariable String bookISBN) {
-        if (bookRepository.existsByISBN(bookISBN) == false) {
+        if (!bookRepository.existsByISBN(bookISBN)) {
             return ResponseEntity.notFound().build();
         }
         bookRepository.deleteByISBN(bookISBN);
