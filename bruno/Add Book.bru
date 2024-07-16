@@ -1,0 +1,22 @@
+meta {
+  name: Add Book
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:8080/books
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "title": "Book1",
+    "author": "John Doe",
+    "genre": "Genre1",
+    "isbn": "23132",
+    "totalPage": 200,
+    "coverImageURL": "http://ka.vc"
+  }
+}
