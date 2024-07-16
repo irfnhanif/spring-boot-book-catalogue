@@ -164,4 +164,14 @@ class BooksCatalogueApplicationTests {
 		assertThat(ISBN).isEqualTo("329");
 		assertThat(title).isEqualTo("Book 329");
 	}
+
+	@Test 
+	void shouldNotUpdateNonExistingBook() {
+		Book failedToUpdateBook = new Book(null, null, null, null, null, null);
+
+		HttpEntity<Book> bookRequest = new HttpEntity<>(failedToUpdateBook);
+		
+		ResponseEntity<String> putResponse = testRestTemplate.exchange("/books/not-isbn", HttpMethod.PUT, bookRequest,String.class);
+		assertThat(putResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+	}
 }
