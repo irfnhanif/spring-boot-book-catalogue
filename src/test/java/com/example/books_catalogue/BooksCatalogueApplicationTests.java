@@ -174,4 +174,11 @@ class BooksCatalogueApplicationTests {
 		ResponseEntity<String> putResponse = testRestTemplate.exchange("/books/not-isbn", HttpMethod.PUT, bookRequest,String.class);
 		assertThat(putResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}
+
+	@Test
+	void shouldDeleteExistingBook() {
+		ResponseEntity<Void> deleteResponse = testRestTemplate.exchange("/books/329", HttpMethod.DELETE, null, Void.class);
+
+		assertThat(deleteResponse.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+	}
 }
